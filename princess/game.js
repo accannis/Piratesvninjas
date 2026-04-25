@@ -127,14 +127,40 @@
       interactables() {
         const list = [];
         if (!state.bearWith && !state.bearReunited) {
-          // baby bear at first meeting
+          // baby bear at first meeting — branching choice
           list.push({
             x: 480, y: GROUND_Y - 40, kind: 'talk', label: 'baby bear', radius: 90,
             action: () => startDialogue([
               { speaker: 'Princess Adrian', text: 'Oh! A baby bear. Hi there!' },
-              { speaker: 'Baby Bear', text: 'Hi! I am all alone. Will you be my friend?' },
-              { speaker: 'Princess Adrian', text: 'Of course! Come on, let\'s explore together.' },
-            ], () => { state.bearWith = true; }),
+              { speaker: 'Baby Bear', text: 'Hi! I am all alone. Will you be my friend?', choices: [
+                {
+                  label: 'Yes! Of course!',
+                  effect: () => { state.bearWith = true; },
+                  branch: [
+                    { speaker: 'Princess Adrian', text: 'Of course! Come on, let\'s explore together!' },
+                    { speaker: 'Baby Bear', text: 'Yay! I love you, Princess.' },
+                  ],
+                },
+                {
+                  label: 'No, you smell funny.',
+                  effect: () => {
+                    state.bearRefused = true;
+                    state.pendingBadEnding = 'alone';
+                  },
+                  branch: [
+                    { speaker: 'Baby Bear', text: '...okay. Goodbye.' },
+                    { speaker: 'Princess Adrian', text: 'Wait — I didn\'t mean it!' },
+                    { speaker: 'Princess Adrian', text: '(the baby bear runs into the woods, crying)' },
+                  ],
+                },
+                {
+                  label: 'Maybe... let me think.',
+                  branch: [
+                    { speaker: 'Baby Bear', text: 'Pleeease? I\'ll be a good friend!' },
+                  ],
+                },
+              ]},
+            ]),
           });
         }
         return list;
@@ -253,9 +279,10 @@
       interactables() {
         const list = [];
         if (!state.vampireDefeated) {
+          // re-trigger the choice dialogue if the player walks back up to the vampire
           list.push({
-            x: 700, y: GROUND_Y - 80, kind: 'fight', label: 'vampire', radius: 130,
-            action: () => triggerVampireFight(),
+            x: 760, y: GROUND_Y - 80, kind: 'talk', label: 'vampire', radius: 130,
+            action: () => triggerVampireMeet(),
           });
         } else {
           list.push({
@@ -336,19 +363,85 @@
   }
 
   // ---------------- Dialogue ----------------
+  // A dialogue line is { speaker, text }, optionally with:
+  //   choices: [ { label, branch?: [more lines], effect?: () => void } ]
+  // When a choice is picked, the chosen branch lines are spliced in after
+  // the current line, the effect runs, and dialogue continues.
   function startDialogue(lines, onEnd) {
-    state.dialogue = { lines, idx: 0, onEnd: onEnd || null };
+    state.dialogue = {
+      lines,
+      idx: 0,
+      selectedChoice: 0,
+      onEnd: onEnd || null,
+      lastChange: state.time,
+      choiceHits: [],
+    };
     state.mode = 'dialogue';
   }
+
+  // Minimum time a line stays on screen (ms) before SPACE can advance — stops
+  // accidental skip-thru when a kid leans on the space bar.
+  const MIN_LINE_DWELL_MS = 250;
+
+  function currentLine() {
+    return state.dialogue && state.dialogue.lines[state.dialogue.idx];
+  }
+
+  function endDialogue() {
+    const cb = state.dialogue && state.dialogue.onEnd;
+    state.dialogue = null;
+    state.mode = 'play';
+    if (cb) cb();
+    // If a choice queued a deferred bad ending or cutscene, fire it now.
+    if (state.pendingBadEnding) {
+      const t = state.pendingBadEnding;
+      state.pendingBadEnding = null;
+      triggerBadEnding(t);
+    } else if (state.pendingAfterDialogue) {
+      const fn = state.pendingAfterDialogue;
+      state.pendingAfterDialogue = null;
+      fn();
+    }
+  }
+
   function advanceDialogue() {
     if (!state.dialogue) return;
-    state.dialogue.idx++;
-    if (state.dialogue.idx >= state.dialogue.lines.length) {
-      const cb = state.dialogue.onEnd;
-      state.dialogue = null;
-      state.mode = 'play';
-      if (cb) cb();
+    const line = currentLine();
+    if (line && line.choices) {
+      pickChoice(state.dialogue.selectedChoice);
+      return;
     }
+    if (state.time - state.dialogue.lastChange < MIN_LINE_DWELL_MS) return;
+    state.dialogue.idx++;
+    state.dialogue.selectedChoice = 0;
+    state.dialogue.lastChange = state.time;
+    if (state.dialogue.idx >= state.dialogue.lines.length) endDialogue();
+  }
+
+  function pickChoice(idx) {
+    if (!state.dialogue) return;
+    if (state.time - state.dialogue.lastChange < MIN_LINE_DWELL_MS) return;
+    const line = currentLine();
+    if (!line || !line.choices) return;
+    const choice = line.choices[idx];
+    if (!choice) return;
+    const branch = choice.branch || [];
+    state.dialogue.lines.splice(state.dialogue.idx + 1, 0, ...branch);
+    const eff = choice.effect;
+    state.dialogue.idx++;
+    state.dialogue.selectedChoice = 0;
+    state.dialogue.lastChange = state.time;
+    if (eff) eff();
+    if (!state.dialogue) return;
+    if (state.dialogue.idx >= state.dialogue.lines.length) endDialogue();
+  }
+
+  function moveSelection(dir) {
+    if (!state.dialogue) return;
+    const line = currentLine();
+    if (!line || !line.choices) return;
+    const n = line.choices.length;
+    state.dialogue.selectedChoice = (state.dialogue.selectedChoice + dir + n) % n;
   }
 
   // ---------------- Cutscenes ----------------
@@ -372,7 +465,22 @@
         state.bearLost = true;
         startDialogue([
           { speaker: 'Princess Adrian', text: 'Wait — Baby Bear! Come back!' },
-          { speaker: 'Princess Adrian', text: 'Oh no, he ran after a butterfly. I have to find him.' },
+          { speaker: '???', text: 'What should the princess do?', choices: [
+            {
+              label: 'I\'ll find you, Baby Bear!',
+              branch: [
+                { speaker: 'Princess Adrian', text: 'Don\'t worry, I\'ll find you, my friend!' },
+              ],
+            },
+            {
+              label: 'Forget him, I\'ll go alone.',
+              effect: () => { state.pendingBadEnding = 'lost'; },
+              branch: [
+                { speaker: 'Princess Adrian', text: 'Hmph. Who needs a silly bear anyway.' },
+                { speaker: 'Princess Adrian', text: '(the woods grow dark and tangled around her)' },
+              ],
+            },
+          ]},
         ]);
       },
       total: 1700,
@@ -382,11 +490,39 @@
 
   function triggerVampireMeet() {
     state._vampireGreeted = true;
+    const choices = [];
+    if (state.bearWith) {
+      choices.push({
+        label: 'Baby Bear, get him!',
+        effect: () => {
+          // queue the fight cutscene to start after dialogue closes
+          state.pendingAfterDialogue = () => triggerVampireFight();
+        },
+        branch: [
+          { speaker: 'Baby Bear', text: 'Stay back, Princess. I\'ll get him!' },
+        ],
+      });
+    }
+    choices.push({
+      label: 'I\'ll fight him myself!',
+      effect: () => { state.pendingBadEnding = 'vampire'; },
+      branch: [
+        { speaker: 'Princess Adrian', text: 'Take that, vampire!' },
+        { speaker: 'Vampire', text: 'Foolish princess... CHOMP!' },
+      ],
+    });
+    choices.push({
+      label: 'Run away!',
+      effect: () => { state.pendingBadEnding = 'frog'; },
+      branch: [
+        { speaker: 'Princess Adrian', text: 'Eep! I\'m out of here!' },
+        { speaker: 'Vampire', text: 'You can\'t escape my magic spell!' },
+      ],
+    });
     startDialogue([
       { speaker: 'Vampire', text: 'MWAHAHA! Who dares enter my cave?' },
       { speaker: 'Princess Adrian', text: 'Eek! A vampire!' },
-      { speaker: 'Baby Bear', text: 'Stay back, Princess. I\'ll get him!' },
-      { speaker: 'Princess Adrian', text: '(walk up and tap him to start the fight)' },
+      { speaker: '???', text: 'What does the princess do?', choices },
     ]);
   }
 
@@ -466,16 +602,42 @@
 
   // ---------------- Input ----------------
   document.addEventListener('keydown', (e) => {
+    // movement keys can repeat (we use held-state, not per-press)
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') state.keys.left = true;
     if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') state.keys.right = true;
+
+    // ignore key-repeats for action keys — kids hold space and skip dialogue
+    if (e.repeat) return;
+
     if (e.code === 'Space') {
       e.preventDefault();
       handleAction();
+      return;
     }
     if (e.key === 'Enter') {
       if (state.mode === 'title') startGame();
-      else if (state.mode === 'ending') resetGame();
+      else if (state.mode === 'ending' || state.mode === 'badEnding') resetGame();
       else handleAction();
+      return;
+    }
+    // dialogue choice navigation
+    if (state.mode === 'dialogue' && state.dialogue) {
+      const line = currentLine();
+      if (line && line.choices) {
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+          moveSelection(-1); return;
+        }
+        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+          moveSelection(1); return;
+        }
+        // 1, 2, 3 jump to a choice and pick it
+        const num = parseInt(e.key, 10);
+        if (!isNaN(num) && num >= 1 && num <= line.choices.length) {
+          state.dialogue.selectedChoice = num - 1;
+          pickChoice(num - 1);
+          return;
+        }
+      }
     }
   });
   document.addEventListener('keyup', (e) => {
@@ -484,8 +646,25 @@
   });
   canvas.addEventListener('pointerdown', (e) => {
     if (state.mode === 'title') { startGame(); return; }
-    if (state.mode === 'ending') { resetGame(); return; }
-    if (state.mode === 'dialogue') { advanceDialogue(); return; }
+    if (state.mode === 'ending' || state.mode === 'badEnding') { resetGame(); return; }
+    if (state.mode === 'dialogue') {
+      // hit-test choice rects if currently on a choice line
+      const line = currentLine();
+      if (line && line.choices && state.dialogue.choiceHits.length) {
+        const rect = canvas.getBoundingClientRect();
+        const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+        for (const hr of state.dialogue.choiceHits) {
+          if (sx >= hr.x && sx <= hr.x + hr.w && sy >= hr.y && sy <= hr.y + hr.h) {
+            state.dialogue.selectedChoice = hr.index;
+            pickChoice(hr.index);
+            return;
+          }
+        }
+      }
+      advanceDialogue();
+      return;
+    }
     handleAction();
   });
 
@@ -508,18 +687,29 @@
     state.sceneId = 'garden';
     state.princess.x = 280;
     state.princess.facing = 1;
+    state.bearRefused = false;
     if (scenes.garden.enter) scenes.garden.enter(state);
+  }
+
+  function triggerBadEnding(type) {
+    state.dialogue = null;
+    state.cutscene = null;
+    state.badEndingType = type;
+    state.mode = 'badEnding';
   }
 
   function resetGame() {
     Object.assign(state, {
       mode: 'title', sceneId: 'garden',
       bearWith: false, bearLost: false, bearReunited: false,
+      bearRefused: false,
       vampireDefeated: false, _vampireGreeted: false, _deathAnim: 1,
       flowersPicked: 0,
       keys: { left: false, right: false },
       dialogue: null, cutscene: null, flash: 0,
       fade: { v: 0, dir: 0 }, pendingScene: null,
+      badEndingType: null,
+      pendingBadEnding: null, pendingAfterDialogue: null,
       time: state.time,
     });
     state.princess = { x: W / 2, facing: 1, walking: false, walkPhase: 0, armRaise: 0 };
@@ -657,7 +847,11 @@
     // dialogue box
     if (state.mode === 'dialogue' && state.dialogue) {
       const line = state.dialogue.lines[state.dialogue.idx];
-      UI.dialogueBox(ctx, W, H, line.speaker, line.text);
+      const hits = UI.dialogueBox(ctx, W, H, line.speaker, line.text, {
+        choices: line.choices,
+        selectedChoice: state.dialogue.selectedChoice,
+      });
+      state.dialogue.choiceHits = hits || [];
     }
 
     // scene name plate (top)
@@ -689,6 +883,9 @@
     // ending overlay
     if (state.mode === 'ending') {
       UI.endingCard(ctx, W, H);
+    }
+    if (state.mode === 'badEnding') {
+      UI.badEndingCard(ctx, W, H, state.badEndingType);
     }
   }
 

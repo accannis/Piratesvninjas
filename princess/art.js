@@ -691,9 +691,21 @@ const UI = (() => {
     return lines;
   }
 
-  // Big speech box at the bottom of screen, with speaker name
-  function dialogueBox(ctx, w, h, speaker, text) {
-    const boxX = 40, boxY = h - 150, boxW = w - 80, boxH = 120;
+  // Big speech box at the bottom of screen, with speaker name.
+  // opts.choices: optional array of {label} for branching dialogue
+  // opts.selectedChoice: index of currently-highlighted choice
+  // Returns the choice hit-rects so the game can do click-to-pick.
+  function dialogueBox(ctx, w, h, speaker, text, opts = {}) {
+    const choices = opts.choices || null;
+    const selected = opts.selectedChoice || 0;
+    const choiceCount = choices ? choices.length : 0;
+    const choiceRowH = 38;
+    const choicesH = choiceCount > 0 ? (choiceCount * choiceRowH + 24) : 0;
+    const boxW = w - 80;
+    const boxH = 110 + choicesH;
+    const boxX = 40;
+    const boxY = h - boxH - 20;
+
     // shadow
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.18)';
@@ -725,12 +737,56 @@ const UI = (() => {
     for (let i = 0; i < lines.length && i < 3; i++) {
       ctx.fillText(lines[i], boxX + 22, boxY + 20 + i * 30);
     }
-    // "press space" hint
+    ctx.restore();
+
+    // choices
+    const hitRects = [];
+    if (choiceCount > 0) {
+      const cx = boxX + 30;
+      const cy0 = boxY + 110;
+      const cw = boxW - 60;
+      ctx.save();
+      ctx.font = 'bold 20px "Comic Sans MS", "Marker Felt", system-ui, sans-serif';
+      ctx.textBaseline = 'middle';
+      for (let i = 0; i < choiceCount; i++) {
+        const rx = cx, ry = cy0 + i * choiceRowH;
+        const rw = cw, rh = choiceRowH - 6;
+        const isSel = i === selected;
+        const fill = isSel ? '#ffd86a' : '#fdfcf4';
+        const stroke = isSel ? '#7a4a10' : '#a08868';
+        Art.rect(ctx, rx, ry, rw, rh, fill, stroke, isSel ? 3 : 2, 921 + i, 0.9);
+        // number badge
+        ctx.fillStyle = isSel ? '#7a4a10' : '#3a2a10';
+        ctx.fillText(`${i + 1}`, rx + 14, ry + rh / 2);
+        // label
+        ctx.fillStyle = '#2b1b0e';
+        ctx.fillText(choices[i].label, rx + 38, ry + rh / 2);
+        // selected pointer
+        if (isSel) {
+          ctx.fillStyle = '#c2386a';
+          ctx.beginPath();
+          ctx.moveTo(rx - 14, ry + rh / 2 - 7);
+          ctx.lineTo(rx - 4, ry + rh / 2);
+          ctx.lineTo(rx - 14, ry + rh / 2 + 7);
+          ctx.closePath(); ctx.fill();
+        }
+        hitRects.push({ x: rx, y: ry, w: rw, h: rh, index: i });
+      }
+      ctx.restore();
+    }
+
+    // hint at bottom
+    ctx.save();
     ctx.font = 'italic 14px "Comic Sans MS", system-ui, sans-serif';
     ctx.fillStyle = '#7a5a30';
     ctx.textAlign = 'right';
-    ctx.fillText('press SPACE', boxX + boxW - 18, boxY + boxH - 24);
+    if (choiceCount > 0) {
+      ctx.fillText('↑ ↓ to choose · SPACE to pick', boxX + boxW - 18, boxY + boxH - 18);
+    } else {
+      ctx.fillText('press SPACE', boxX + boxW - 18, boxY + boxH - 18);
+    }
     ctx.restore();
+    return hitRects;
   }
 
   // Floating action bubble above an interactable. kind: 'talk'|'pickup'|'use'|'fight'
@@ -847,5 +903,51 @@ const UI = (() => {
     ctx.restore();
   }
 
-  return { dialogueBox, actionPrompt, exitArrow, titleCard, endingCard, wrap };
+  // Bad ending card. type: 'frog' | 'vampire' | 'lost' | 'alone'
+  function badEndingCard(ctx, w, h, type) {
+    const messages = {
+      frog: {
+        title: 'Oh no! You\'re a frog!',
+        body: 'The vampire turned you into a tiny green frog. Ribbit!',
+        color: '#3a8e2e',
+      },
+      vampire: {
+        title: 'You became a vampire!',
+        body: 'The vampire bit you and now you have pointy fangs too...',
+        color: '#7a1818',
+      },
+      lost: {
+        title: 'Lost forever...',
+        body: 'Without your friend, you wandered the dark woods alone.',
+        color: '#3a2a5a',
+      },
+      alone: {
+        title: 'All alone...',
+        body: 'The baby bear ran away crying. Now you have no friend.',
+        color: '#7a4a8a',
+      },
+    };
+    const m = messages[type] || messages.lost;
+    // dim overlay
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+    Art.rect(ctx, w / 2 - 300, h / 2 - 110, 600, 220, '#fff8e0', '#3a2a10', 5, 1201, 1.6);
+    Art.scribbleFill(ctx, w / 2 - 300, h / 2 - 110, 600, 220, '#e0b8a0', { density: 9, seed: 1211, alpha: 0.25, angle: 0.15 });
+    ctx.save();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = 'bold 44px "Comic Sans MS", system-ui, sans-serif';
+    ctx.fillStyle = m.color;
+    ctx.fillText(m.title, w / 2, h / 2 - 40);
+    ctx.font = '20px "Comic Sans MS", system-ui, sans-serif';
+    ctx.fillStyle = '#3a2a10';
+    ctx.fillText(m.body, w / 2, h / 2 + 10);
+    ctx.font = 'italic 18px "Comic Sans MS", system-ui, sans-serif';
+    ctx.fillStyle = '#7a4a20';
+    ctx.fillText('Press ENTER to try again', w / 2, h / 2 + 70);
+    ctx.restore();
+  }
+
+  return { dialogueBox, actionPrompt, exitArrow, titleCard, endingCard, badEndingCard, wrap };
 })();

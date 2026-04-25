@@ -25,13 +25,28 @@ python3 -m http.server 8000
 
 - **← →** or **A / D** — walk
 - **SPACE** or **click** — talk to characters / pick things up / advance dialogue
+- **↑ ↓** or **W / S** — pick a choice when there are multiple options
+- **1 / 2 / 3** — jump straight to that choice
 - **ENTER** — start the game / play again
 
 When the princess gets near something she can interact with, a little floating
-icon appears (talk bubble, star for picking up, sword for fight). Press SPACE
-to do the action.
+icon appears (talk bubble, star for picking up). Press SPACE to do the action.
 
 Walk to the edge of a screen with a blue arrow to move to the next area.
+
+## Choices and endings
+
+The princess will sometimes have to **pick what to say or do** — be kind to
+the bear, or be mean? Look for him when he gets lost, or leave him? Have
+him fight the vampire, or run away?
+
+If you make kind, brave choices the story has a happy ending. If you make
+mean or scared choices, you'll get a silly bad ending instead — the
+vampire might turn you into a frog, or you might get lost in the dark
+woods forever. When that happens, press **ENTER** to try again.
+
+(Holding down the SPACE key won't skip the dialogue — you have to press
+it cleanly each time.)
 
 ## Files
 
