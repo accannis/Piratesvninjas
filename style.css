@@ -167,16 +167,21 @@ html, body {
   min-height: 180px;
 }
 .puzzle-sprite {
-  width: 192px;
-  height: 192px;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  background: rgba(0,0,0,0.25);
-  border: 4px solid #ffd700;
-  border-radius: 12px;
-  padding: 8px;
-  filter: drop-shadow(3px 3px 0 #000);
+  width: 220px;
+  height: 220px;
+  background: linear-gradient(180deg, #fff8e0 0%, #ffe0a8 100%);
+  border: 5px solid #ffd700;
+  border-radius: 18px;
+  padding: 10px;
+  filter: drop-shadow(4px 6px 0 rgba(0,0,0,0.4));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.puzzle-sprite svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .puzzle-options {
@@ -238,7 +243,7 @@ html, body {
 }
 
 @media (max-width: 600px) {
-  .puzzle-sprite { width: 144px; height: 144px; }
+  .puzzle-sprite { width: 170px; height: 170px; }
   .big-btn { padding: 14px 30px; }
   .option-btn { font-size: 16px; height: 60px; }
 }

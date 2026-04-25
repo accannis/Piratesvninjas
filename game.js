@@ -71,6 +71,10 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
+// Preload all SVG art before allowing gameplay so canvas drawImage works.
+let _artReady = false;
+preloadArt(() => { _artReady = true; });
+
 document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-action]');
   if (!t) return;
@@ -110,14 +114,9 @@ function renderPuzzle() {
   document.getElementById('puzzle-question').textContent = 'Comment dit-on ça en français?';
   document.getElementById('puzzle-feedback').textContent = '';
 
-  // Render the sprite image into the visual area
+  // Inject the SVG directly so it stays vector-crisp at any size.
   const visual = document.getElementById('puzzle-visual');
-  visual.innerHTML = '';
-  const img = document.createElement('img');
-  img.className = 'puzzle-sprite';
-  img.alt = p.answer;
-  img.src = spriteToDataURL(p.sprite, 12);
-  visual.appendChild(img);
+  visual.innerHTML = `<div class="puzzle-sprite">${getArtSVG(p.sprite)}</div>`;
 
   const opts = document.getElementById('puzzle-options');
   opts.innerHTML = '';

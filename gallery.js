@@ -5,9 +5,9 @@
 // =====================================================================
 
 const Gallery = (() => {
-  const SCALE = 4;
-  const W = 640;   // logical canvas width
-  const H = 400;   // logical canvas height
+  const TARGET_SIZE = 80;  // px on canvas
+  const W = 640;
+  const H = 400;
   const LANES_Y = [110, 200, 290];
 
   let canvas, ctx;
@@ -34,7 +34,8 @@ const Gallery = (() => {
     canvas.width = W;
     canvas.height = H;
     ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     state = {
       stageId,
@@ -67,7 +68,7 @@ const Gallery = (() => {
 
   function makeTarget(def, y, laneIdx) {
     const dir = Math.random() < 0.5 ? 1 : -1;
-    const x = dir > 0 ? -50 : W + 50;
+    const x = dir > 0 ? -TARGET_SIZE : W + TARGET_SIZE;
     return {
       sprite: def.name,
       pts: def.pts,
@@ -75,8 +76,8 @@ const Gallery = (() => {
       x, y,
       dir,
       laneIdx,
-      width: 16 * SCALE,
-      height: 16 * SCALE,
+      width: TARGET_SIZE,
+      height: TARGET_SIZE,
       hit: false,
       hitTimer: 0,
       hitText: '',
@@ -233,19 +234,27 @@ const Gallery = (() => {
 
     // Targets
     for (const t of state.targets) {
+      const img = getArtImage(t.sprite);
+      if (!img) continue;
       let drawX = t.x; let drawY = t.y;
       if (t.hitTimer > 0) {
-        // wobble + drop
         const fall = (600 - t.hitTimer) / 600;
         drawY = t.y + fall * 30;
         ctx.save();
         ctx.translate(drawX + t.width / 2, drawY + t.height / 2);
         ctx.rotate(fall * Math.PI);
-        ctx.translate(-t.width / 2, -t.height / 2);
-        drawSprite(ctx, t.sprite, 0, 0, SCALE);
+        ctx.drawImage(img, -t.width / 2, -t.height / 2, t.width, t.height);
         ctx.restore();
       } else {
-        drawSprite(ctx, t.sprite, drawX, drawY, SCALE, { flip: t.dir < 0 });
+        if (t.dir < 0) {
+          ctx.save();
+          ctx.translate(drawX + t.width, drawY);
+          ctx.scale(-1, 1);
+          ctx.drawImage(img, 0, 0, t.width, t.height);
+          ctx.restore();
+        } else {
+          ctx.drawImage(img, drawX, drawY, t.width, t.height);
+        }
       }
     }
 

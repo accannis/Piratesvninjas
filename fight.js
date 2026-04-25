@@ -5,10 +5,9 @@
 // =====================================================================
 
 const Fight = (() => {
-  const SCALE = 3;          // pixel scale for sprites
-  const TILE = 16 * SCALE;  // tile size in screen pixels
-  const COLS = 16;
-  const ROWS = 11;
+  const TILE = 64;          // tile size in screen pixels
+  const COLS = 14;
+  const ROWS = 9;
   const W = COLS * TILE;
   const H = ROWS * TILE;
   const HUD_H = 56;
@@ -36,7 +35,8 @@ const Fight = (() => {
     canvas.width = W;
     canvas.height = H + HUD_H;
     ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     const cfg = STAGE_CONFIG[stageId] || STAGE_CONFIG.pirate;
 
@@ -81,15 +81,16 @@ const Fight = (() => {
   function generateDecor(stageId) {
     const items = [];
     const decorSprites = stageId === 'zombie'
-      ? ['tomb', 'tree', 'rock']
+      ? ['tomb', 'tree', 'rock', 'tomb']
       : stageId === 'warrior'
         ? ['rock', 'rock', 'tree']
         : ['rock', 'tree', 'rock'];
-    for (let i = 0; i < 8; i++) {
-      const x = 20 + Math.random() * (W - 60);
-      const y = 20 + Math.random() * (H - 60);
-      // keep clear of center where player spawns
-      if (Math.hypot(x - W / 2, y - H / 2) < TILE * 2.5) continue;
+    for (let i = 0; i < 6; i++) {
+      const x = 20 + Math.random() * (W - TILE - 40);
+      const y = 20 + Math.random() * (H - TILE - 40);
+      if (Math.hypot(x - W / 2, y - H / 2) < TILE * 2) continue;
+      // skip if too close to other decor
+      if (items.some((d) => Math.hypot(d.x - x, d.y - y) < TILE)) continue;
       items.push({
         sprite: decorSprites[Math.floor(Math.random() * decorSprites.length)],
         x, y,
@@ -184,23 +185,19 @@ const Fight = (() => {
     const sprite = opts.boss
       ? (state.cfg.enemy === 'pirate' ? 'bossPirate' : state.cfg.enemy)
       : state.cfg.enemy;
-    // bossPirate is already 24x24 logical; regular sprites get 1.5x scale.
-    const renderScale = opts.boss
-      ? (sprite === 'bossPirate' ? SCALE : SCALE * 1.5)
-      : SCALE;
+    const size = opts.boss ? TILE * 1.5 : TILE;
 
     state.enemies.push({
       x, y,
-      w: opts.boss ? TILE * 1.5 : TILE,
-      h: opts.boss ? TILE * 1.5 : TILE,
+      w: size, h: size,
       sprite,
-      renderScale,
       isBoss: !!opts.boss,
-      speed: baseSpeed * 0.7, // slower for kid difficulty
+      speed: baseSpeed * 0.7,
       hp: opts.boss ? baseHP * 3 : baseHP,
       maxHP: opts.boss ? baseHP * 3 : baseHP,
       flash: 0,
       knockback: { x: 0, y: 0 },
+      facing: 1,
     });
   }
 
@@ -325,16 +322,22 @@ const Fight = (() => {
 
   function render() {
     // Tiled ground
-    const tileName = state.cfg.tile;
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        drawSprite(ctx, tileName, c * TILE, r * TILE, SCALE);
+    const tileImg = getArtImage(state.cfg.tile);
+    if (tileImg) {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          ctx.drawImage(tileImg, c * TILE, r * TILE, TILE, TILE);
+        }
       }
+    } else {
+      ctx.fillStyle = '#5fb13e';
+      ctx.fillRect(0, 0, W, H);
     }
 
     // Decor (rocks, trees, tombs)
     for (const d of state.decor) {
-      drawSprite(ctx, d.sprite, d.x, d.y, SCALE);
+      const dimg = getArtImage(d.sprite);
+      if (dimg) ctx.drawImage(dimg, d.x, d.y, TILE, TILE);
     }
 
     // Pickups
@@ -352,15 +355,28 @@ const Fight = (() => {
 
     // Enemies
     for (const e of state.enemies) {
-      const tint = e.flash > 0 ? '#ffffff' : null;
-      drawSprite(ctx, e.sprite, e.x, e.y, e.renderScale, { tint });
+      const eimg = getArtImage(e.sprite);
+      if (eimg) {
+        ctx.save();
+        if (e.flash > 0) {
+          // hit-flash: bright white overlay
+          ctx.globalAlpha = 1;
+          ctx.drawImage(eimg, e.x, e.y, e.w, e.h);
+          ctx.globalCompositeOperation = 'source-atop';
+          ctx.fillStyle = 'rgba(255,255,255,0.7)';
+          ctx.fillRect(e.x, e.y, e.w, e.h);
+        } else {
+          ctx.drawImage(eimg, e.x, e.y, e.w, e.h);
+        }
+        ctx.restore();
+      }
       // HP bar above
       if (e.maxHP > 1) {
         const bw = e.w;
         ctx.fillStyle = '#000';
-        ctx.fillRect(e.x, e.y - 6, bw, 4);
+        ctx.fillRect(e.x, e.y - 8, bw, 6);
         ctx.fillStyle = '#cc2222';
-        ctx.fillRect(e.x + 1, e.y - 5, (bw - 2) * (e.hp / e.maxHP), 2);
+        ctx.fillRect(e.x + 1, e.y - 7, (bw - 2) * (e.hp / e.maxHP), 4);
       }
     }
 
@@ -369,12 +385,33 @@ const Fight = (() => {
     const flicker = p.invuln > 0 && Math.floor(p.invuln / 100) % 2 === 0;
     if (!flicker) {
       const bob = Math.floor(Math.sin(p.bobFrame / 100) * 2);
-      drawSprite(ctx, 'hero', p.x, p.y + bob, SCALE, {
-        flip: p.dir === 'left',
-      });
-      // facing indicator: tiny sword in attack direction
+      const heroImg = getArtImage('hero');
+      if (heroImg) {
+        if (p.dir === 'left') {
+          ctx.save();
+          ctx.translate(p.x + p.w, p.y + bob);
+          ctx.scale(-1, 1);
+          ctx.drawImage(heroImg, 0, 0, p.w, p.h);
+          ctx.restore();
+        } else {
+          ctx.drawImage(heroImg, p.x, p.y + bob, p.w, p.h);
+        }
+      }
       if (p.attackTimer > 0 && p.attackHitbox) {
-        drawSprite(ctx, 'slash', p.attackHitbox.x, p.attackHitbox.y, SCALE);
+        const slashImg = getArtImage('slash');
+        if (slashImg) {
+          ctx.save();
+          // rotate slash to match facing direction
+          const cx = p.attackHitbox.x + TILE / 2;
+          const cy = p.attackHitbox.y + TILE / 2;
+          ctx.translate(cx, cy);
+          if (p.dir === 'right') {/* default */}
+          else if (p.dir === 'left')  ctx.rotate(Math.PI);
+          else if (p.dir === 'up')    ctx.rotate(-Math.PI / 2);
+          else if (p.dir === 'down')  ctx.rotate(Math.PI / 2);
+          ctx.drawImage(slashImg, -TILE / 2, -TILE / 2, TILE, TILE);
+          ctx.restore();
+        }
       }
     }
 
