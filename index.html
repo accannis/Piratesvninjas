@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pirates, Zombies &amp; Warriors - Antonio's Game</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="game">
+
+  <!-- TITLE SCREEN -->
+  <section id="screen-title" class="screen active">
+    <h1 class="title">
+      <span class="word pirate">Pirates</span>
+      <span class="amp">,</span>
+      <span class="word zombie">Zombies</span>
+      <span class="amp">&amp;</span>
+      <span class="word warrior">Warriors</span>
+    </h1>
+    <p class="subtitle">Antonio's Battlefield Adventure</p>
+    <div class="char-row">
+      <div class="char">🏴‍☠️</div>
+      <div class="char">🧟</div>
+      <div class="char">⚔️</div>
+    </div>
+    <button class="big-btn play-btn" data-action="start">PLAY</button>
+    <p class="how-to">Solve a puzzle. Shoot 6 targets. Win the fight!</p>
+  </section>
+
+  <!-- LEVEL INTRO -->
+  <section id="screen-intro" class="screen">
+    <div class="intro-card">
+      <div class="intro-emoji" id="intro-emoji">🏴‍☠️</div>
+      <h2 id="intro-title">Level 1: Pirates</h2>
+      <p id="intro-text">The pirates have landed on the battlefield!</p>
+      <button class="big-btn" data-action="to-puzzle">Start Puzzle</button>
+    </div>
+  </section>
+
+  <!-- PUZZLE SCREEN -->
+  <section id="screen-puzzle" class="screen">
+    <div class="puzzle-card">
+      <h2>Puzzle Time!</h2>
+      <p class="puzzle-question" id="puzzle-question">How many?</p>
+      <div class="puzzle-visual" id="puzzle-visual"></div>
+      <div class="puzzle-options" id="puzzle-options"></div>
+      <p class="puzzle-feedback" id="puzzle-feedback"></p>
+    </div>
+  </section>
+
+  <!-- ARCHERY SCREEN -->
+  <section id="screen-archery" class="screen">
+    <div class="hud">
+      <div class="hud-item">🏹 Arrows: <span id="arrow-count">12</span></div>
+      <div class="hud-item">⭐ Score: <span id="archery-score">0</span></div>
+      <div class="hud-item">🎯 Hits: <span id="hit-count">0</span> / 6</div>
+    </div>
+    <div class="battlefield" id="battlefield">
+      <!-- targets injected here -->
+    </div>
+    <p class="hint">Click the middle of each target for the most points!</p>
+  </section>
+
+  <!-- ARCHERY RESULTS -->
+  <section id="screen-archery-results" class="screen">
+    <div class="result-card">
+      <h2 id="archery-result-title">Nice Shooting!</h2>
+      <p class="big-num"><span id="final-archery-score">0</span> points</p>
+      <p id="archery-result-text">You earned the right to fight!</p>
+      <button class="big-btn" data-action="to-fight">Quick Fight!</button>
+    </div>
+  </section>
+
+  <!-- QUICK FIGHT -->
+  <section id="screen-fight" class="screen">
+    <div class="hud">
+      <div class="hud-item">❤️ Lives: <span id="lives-count">3</span></div>
+      <div class="hud-item">💥 Defeated: <span id="defeated-count">0</span> / 5</div>
+      <div class="hud-item">⏱️ Time: <span id="fight-time">20</span></div>
+    </div>
+    <div class="fight-arena" id="fight-arena"></div>
+    <p class="hint">Tap the enemies fast!</p>
+  </section>
+
+  <!-- LEVEL COMPLETE -->
+  <section id="screen-level-complete" class="screen">
+    <div class="result-card">
+      <h2 id="level-complete-title">Level Complete!</h2>
+      <p class="big-num">⭐⭐⭐</p>
+      <p id="level-complete-text">You won the battle!</p>
+      <button class="big-btn" data-action="next-level">Next Level</button>
+    </div>
+  </section>
+
+  <!-- GAME OVER / WIN -->
+  <section id="screen-win" class="screen">
+    <h1 class="title win-title">YOU WON!</h1>
+    <div class="char-row big">
+      <div class="char">🏴‍☠️</div>
+      <div class="char">🧟</div>
+      <div class="char">⚔️</div>
+    </div>
+    <p class="subtitle">You beat the Pirates, Zombies and Warriors!</p>
+    <p class="big-num">Final Score: <span id="final-game-score">0</span></p>
+    <button class="big-btn" data-action="restart">Play Again</button>
+  </section>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
