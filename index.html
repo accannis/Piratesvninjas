@@ -42,9 +42,10 @@
   <!-- PUZZLE SCREEN -->
   <section id="screen-puzzle" class="screen">
     <div class="puzzle-card">
-      <h2>Puzzle Time!</h2>
-      <p class="puzzle-question" id="puzzle-question">How many?</p>
-      <div class="puzzle-visual" id="puzzle-visual"></div>
+      <p class="puzzle-progress" id="puzzle-progress">Question 1 / 3</p>
+      <h2>French Vocabulary</h2>
+      <p class="puzzle-question" id="puzzle-question">Comment dit-on ça en français?</p>
+      <div class="puzzle-visual big" id="puzzle-visual"></div>
       <div class="puzzle-options" id="puzzle-options"></div>
       <p class="puzzle-feedback" id="puzzle-feedback"></p>
     </div>
@@ -52,11 +53,18 @@
 
   <!-- ARCHERY SCREEN -->
   <section id="screen-archery" class="screen">
-    <div class="hud">
-      <div class="hud-item">🏹 Arrows: <span id="arrow-count">12</span></div>
-      <div class="hud-item">⭐ Score: <span id="archery-score">0</span></div>
-      <div class="hud-item">🎯 Hits: <span id="hit-count">0</span> / 6</div>
+    <div class="hud archery-hud">
+      <div class="hud-item player">
+        🏹 You: <span id="player-score">0</span>
+        <span class="arrows-left">(<span id="player-arrows">6</span> arrows)</span>
+      </div>
+      <div class="hud-item versus">VS</div>
+      <div class="hud-item computer">
+        🤖 Computer: <span id="computer-score">0</span>
+        <span class="arrows-left">(<span id="computer-arrows">6</span> arrows)</span>
+      </div>
     </div>
+    <div id="turn-banner" class="turn-banner">👉 YOUR TURN</div>
     <div class="battlefield" id="battlefield">
       <!-- targets injected here -->
     </div>
@@ -67,7 +75,11 @@
   <section id="screen-archery-results" class="screen">
     <div class="result-card">
       <h2 id="archery-result-title">Nice Shooting!</h2>
-      <p class="big-num"><span id="final-archery-score">0</span> points</p>
+      <p class="versus-score">
+        <span class="player">You: <span id="final-player-score">0</span></span>
+        <span class="vs-mid">vs</span>
+        <span class="computer">Computer: <span id="final-computer-score">0</span></span>
+      </p>
       <p id="archery-result-text">You earned the right to fight!</p>
       <button class="big-btn" data-action="to-fight">Quick Fight!</button>
     </div>

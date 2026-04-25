@@ -152,6 +152,18 @@ html, body {
   justify-content: center;
   gap: 8px;
 }
+.puzzle-visual.big {
+  font-size: clamp(100px, 18vw, 180px);
+  min-height: 180px;
+  filter: drop-shadow(4px 4px 0 #000);
+  animation: wiggle 2.5s ease-in-out infinite;
+}
+.puzzle-progress {
+  font-size: 16px !important;
+  color: #ffd700;
+  margin-bottom: 4px !important;
+  font-weight: bold;
+}
 .puzzle-options {
   display: flex;
   flex-wrap: wrap;
@@ -220,7 +232,7 @@ html, body {
 #screen-archery {
   background: linear-gradient(180deg, #4a5d3a 0%, #2d3a1f 50%, #1a2210 100%);
   cursor: crosshair;
-  padding-top: 70px;
+  padding-top: 120px;
 }
 .battlefield {
   position: relative;
@@ -265,8 +277,8 @@ html, body {
 
 .arrow-mark {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: #000;
   border: 2px solid #ffd700;
   border-radius: 50%;
@@ -274,6 +286,59 @@ html, body {
   pointer-events: none;
   z-index: 15;
 }
+.arrow-mark.player   { border-color: #4ecdc4; background: #2a8a83; }
+.arrow-mark.computer { border-color: #ff6b6b; background: #8b0000; }
+.arrow-pop.player    { color: #4ecdc4; }
+.arrow-pop.computer  { color: #ff6b6b; }
+
+.flying-arrow {
+  position: absolute;
+  font-size: 32px;
+  pointer-events: none;
+  z-index: 25;
+  filter: drop-shadow(2px 2px 0 #000);
+}
+
+.archery-hud {
+  font-size: clamp(14px, 1.8vw, 18px);
+}
+.archery-hud .player   { color: #4ecdc4; }
+.archery-hud .computer { color: #ff6b6b; }
+.archery-hud .versus   { color: #ffd700; font-size: 22px; }
+.archery-hud .arrows-left { font-size: 0.85em; opacity: 0.8; margin-left: 6px; }
+
+.turn-banner {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.75);
+  color: #ffd700;
+  padding: 8px 24px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: clamp(16px, 2.5vw, 24px);
+  z-index: 9;
+  border: 3px solid #ffd700;
+  white-space: nowrap;
+}
+.turn-banner.flash {
+  animation: banner-flash 0.5s ease-out;
+}
+@keyframes banner-flash {
+  0%   { transform: translateX(-50%) scale(0.7); opacity: 0; }
+  60%  { transform: translateX(-50%) scale(1.15); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+.versus-score {
+  font-size: clamp(20px, 3vw, 30px) !important;
+  font-weight: bold;
+  margin: 20px 0 !important;
+}
+.versus-score .player   { color: #4ecdc4; }
+.versus-score .computer { color: #ff6b6b; }
+.versus-score .vs-mid   { color: #ffd700; margin: 0 14px; }
 
 .hint {
   position: absolute;

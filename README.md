@@ -18,11 +18,13 @@ python3 -m http.server 8000
 Three levels - **Pirates**, **Zombies**, and **Warriors**. Each level has the
 same three steps:
 
-1. **Puzzle** - answer a question to earn the right to fight.
-2. **Archery** - 6 targets, 12 arrows. The closer you click to the center, the
-   more points you score. Bullseye = 10, then 7, 4, 1.
-3. **Quick fight** - tap the enemies before they escape. Defeat all 5 to win
-   the level.
+1. **French vocabulary** - 3 questions per level. See a picture, pick the
+   French word. Get all 3 right to advance.
+2. **Archery vs computer** - you get 6 arrows, the computer gets 6. Take turns
+   shooting. Closer to the center = more points (bullseye = 10, then 7, 4, 1).
+   Beat the computer for a 20-point bonus. The computer gets harder each level.
+3. **Quick fight** - tap 5 enemies before they escape. You have 3 lives and
+   20 seconds.
 
 Beat all three levels to win the game.
 
