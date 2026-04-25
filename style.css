@@ -242,6 +242,49 @@ html, body {
   text-shadow: 3px 3px 0 #000;
 }
 
+/* BAD ENDING (choose your own adventure) */
+.result-card.bad-ending {
+  background: rgba(50, 0, 0, 0.65);
+  border-color: #ff6b6b;
+  box-shadow: 0 0 40px rgba(255, 0, 0, 0.4) inset;
+}
+.bad-emoji {
+  font-size: 110px;
+  margin: 8px 0 12px;
+  animation: shake-end 0.6s ease-in-out 2;
+  filter: drop-shadow(3px 3px 0 #000);
+}
+@keyframes shake-end {
+  0%,100% { transform: translateX(0) rotate(0); }
+  25%     { transform: translateX(-6px) rotate(-6deg); }
+  75%     { transform: translateX(6px) rotate(6deg); }
+}
+.bad-title {
+  color: #ff6b6b;
+  font-size: clamp(36px, 6vw, 56px) !important;
+  text-shadow: 4px 4px 0 #000;
+  letter-spacing: 2px;
+}
+.bad-pick {
+  color: #ffd700 !important;
+  font-style: italic;
+  font-size: clamp(14px, 2vw, 18px) !important;
+  margin-bottom: 14px !important;
+  opacity: 0.9;
+}
+.bad-text {
+  font-size: clamp(18px, 2.5vw, 24px) !important;
+  line-height: 1.5;
+  padding: 0 12px;
+}
+.the-end {
+  color: #ff6b6b;
+  font-style: italic;
+  font-size: clamp(20px, 3vw, 28px) !important;
+  margin: 18px 0 8px !important;
+  letter-spacing: 4px;
+}
+
 @media (max-width: 600px) {
   .puzzle-sprite { width: 170px; height: 170px; }
   .big-btn { padding: 14px 30px; }

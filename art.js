@@ -16,17 +16,20 @@ const _S = 'stroke="#1a1a2e" stroke-width="3" stroke-linejoin="round" stroke-lin
 ART.hero = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <ellipse cx="50" cy="82" rx="24" ry="13" fill="#5a7ec2" ${_S}/>
   <rect x="30" y="74" width="40" height="6" fill="#3e5a96" ${_S}/>
-  <circle cx="50" cy="44" r="24" fill="#ffd9a8" ${_S}/>
-  <path d="M 26 42 Q 26 18 50 18 Q 74 18 74 42 L 74 38 Q 50 30 26 38 Z" fill="#cfd2d8" ${_S}/>
-  <rect x="26" y="38" width="48" height="6" fill="#a4a8b0" ${_S}/>
-  <path d="M 50 18 Q 62 4 70 12 Q 60 16 50 20" fill="#cc2222" ${_S}/>
+  <circle cx="50" cy="46" r="22" fill="#ffd9a8" ${_S}/>
+  <path d="M 28 38 Q 28 14 50 14 Q 72 14 72 38 Z" fill="#9aa0ac" ${_S}/>
+  <ellipse cx="50" cy="38" rx="22" ry="3.5" fill="#6a7078" ${_S}/>
+  <circle cx="34" cy="30" r="1.6" fill="#5a6068"/>
+  <circle cx="66" cy="30" r="1.6" fill="#5a6068"/>
+  <circle cx="50" cy="22" r="1.6" fill="#5a6068"/>
+  <path d="M 50 14 Q 62 2 70 8 Q 60 12 50 18 Z" fill="#cc2222" ${_S}/>
   <circle cx="42" cy="50" r="4.5" fill="#fff" ${_S}/>
   <circle cx="58" cy="50" r="4.5" fill="#fff" ${_S}/>
   <circle cx="43" cy="51" r="2.2" fill="#1a1a2e"/>
   <circle cx="59" cy="51" r="2.2" fill="#1a1a2e"/>
-  <path d="M 44 60 Q 50 65 56 60" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
-  <circle cx="36" cy="56" r="3" fill="#ffb0a0" opacity="0.6"/>
-  <circle cx="64" cy="56" r="3" fill="#ffb0a0" opacity="0.6"/>
+  <path d="M 44 62 Q 50 67 56 62" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="36" cy="58" r="3" fill="#ffb0a0" opacity="0.6"/>
+  <circle cx="64" cy="58" r="3" fill="#ffb0a0" opacity="0.6"/>
 </svg>`;
 
 ART.pirate = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">

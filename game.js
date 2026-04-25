@@ -11,12 +11,24 @@ const LEVELS = [
     title: 'Stage 1: Pirate Cove',
     intro: 'Les pirates ont accosté! Defend the cove!',
     puzzlePool: [
-      { sprite: 'pirate',  answer: 'le pirate',         options: ['le pirate', 'le marin', 'le capitaine', 'le voleur'] },
-      { sprite: 'ship',    answer: 'le bateau',         options: ['le bateau', 'le radeau', 'la voile', 'le port'] },
-      { sprite: 'parrot',  answer: 'le perroquet',      options: ['le perroquet', 'le canari', 'le corbeau', 'le faucon'] },
-      { sprite: 'chest',   answer: 'le coffre au trésor', options: ['le coffre au trésor', 'la boîte', 'le sac', 'le tonneau'] },
-      { sprite: 'anchor',  answer: 'l\'ancre',          options: ['l\'ancre', 'la chaîne', 'le crochet', 'la corde'] },
-      { sprite: 'sword',   answer: 'l\'épée',           options: ['l\'épée', 'le poignard', 'le sabre', 'la dague'] },
+      { sprite: 'pirate', answer: 'le pirate', options: ['le pirate', 'le marin', 'le capitaine', 'le voleur'],
+        wrongEmoji: '🌊',
+        wrongEnding: 'The pirates think you\'re a sea monster! SPLASH! You walk the plank into the cold ocean. The end!' },
+      { sprite: 'ship', answer: 'le bateau', options: ['le bateau', 'le radeau', 'la voile', 'le port'],
+        wrongEmoji: '🏝️',
+        wrongEnding: 'You point at the wrong boat and miss the ride home! Marooned on a tiny island with only one coconut. The end!' },
+      { sprite: 'parrot', answer: 'le perroquet', options: ['le perroquet', 'le canari', 'le corbeau', 'le faucon'],
+        wrongEmoji: '🗝️',
+        wrongEnding: 'The parrot squawks "INTRUDER! INTRUDER!" The captain throws you in the brig. Bread and water for a year! The end!' },
+      { sprite: 'chest', answer: 'le coffre au trésor', options: ['le coffre au trésor', 'la boîte', 'le sac', 'le tonneau'],
+        wrongEmoji: '🔒',
+        wrongEnding: 'You give the wrong magic word and the chest snaps shut on your fingers! The pirates lock you INSIDE the chest. The end!' },
+      { sprite: 'anchor', answer: 'l\'ancre', options: ['l\'ancre', 'la chaîne', 'le crochet', 'la corde'],
+        wrongEmoji: '🦶',
+        wrongEnding: 'You touch the wrong heavy thing - CLUNK! The anchor falls right on your foot. No fighting today, off to bed! The end!' },
+      { sprite: 'sword', answer: 'l\'épée', options: ['l\'épée', 'le poignard', 'le sabre', 'la dague'],
+        wrongEmoji: '🍌',
+        wrongEnding: 'You grab a banana for the duel. The pirate giggles, then beats you in three swings! The end!' },
     ],
   },
   {
@@ -25,11 +37,21 @@ const LEVELS = [
     title: 'Stage 2: Zombie Swamp',
     intro: 'Les morts-vivants se réveillent. Stay sharp!',
     puzzlePool: [
-      { sprite: 'zombie', answer: 'le mort-vivant',  options: ['le mort-vivant', 'le fantôme', 'le squelette', 'la sorcière'] },
-      { sprite: 'brain',  answer: 'le cerveau',      options: ['le cerveau', 'le cœur', 'le foie', 'l\'estomac'] },
-      { sprite: 'moon',   answer: 'la pleine lune',  options: ['la pleine lune', 'le croissant', 'l\'étoile', 'le soleil'] },
-      { sprite: 'bone',   answer: 'l\'os',           options: ['l\'os', 'la dent', 'le crâne', 'la côte'] },
-      { sprite: 'tomb',   answer: 'la tombe',        options: ['la tombe', 'le cercueil', 'la chapelle', 'la crypte'] },
+      { sprite: 'zombie', answer: 'le mort-vivant', options: ['le mort-vivant', 'le fantôme', 'le squelette', 'la sorcière'],
+        wrongEmoji: '🧠',
+        wrongEnding: 'You don\'t recognize a zombie? It sneaks up and CHOMP! Now YOU\'RE a zombie too. Brains... brains... The end!' },
+      { sprite: 'brain', answer: 'le cerveau', options: ['le cerveau', 'le cœur', 'le foie', 'l\'estomac'],
+        wrongEmoji: '🏃',
+        wrongEnding: 'The zombies hear the wrong word and think you have brains for them. They chase you all night long! The end!' },
+      { sprite: 'moon', answer: 'la pleine lune', options: ['la pleine lune', 'le croissant', 'l\'étoile', 'le soleil'],
+        wrongEmoji: '😴',
+        wrongEnding: 'You fall asleep under the wrong moonlight and wake up... next month! Everyone wonders where you went. The end!' },
+      { sprite: 'bone', answer: 'l\'os', options: ['l\'os', 'la dent', 'le crâne', 'la côte'],
+        wrongEmoji: '💀',
+        wrongEnding: 'You step on the wrong thing in the dark - CRACK! The zombies come running! Run away forever! The end!' },
+      { sprite: 'tomb', answer: 'la tombe', options: ['la tombe', 'le cercueil', 'la chapelle', 'la crypte'],
+        wrongEmoji: '👻',
+        wrongEnding: 'You take the wrong path through the graveyard and get totally lost. The ghosts keep you company forever. The end!' },
     ],
   },
   {
@@ -38,12 +60,24 @@ const LEVELS = [
     title: 'Stage 3: Warrior Fields',
     intro: 'Les guerriers chargent! To battle!',
     puzzlePool: [
-      { sprite: 'warrior', answer: 'le guerrier',  options: ['le guerrier', 'le chevalier', 'le soldat', 'le seigneur'] },
-      { sprite: 'shield',  answer: 'le bouclier',  options: ['le bouclier', 'l\'armure', 'le casque', 'la cotte'] },
-      { sprite: 'sword',   answer: 'l\'épée',      options: ['l\'épée', 'la lance', 'la hache', 'l\'arc'] },
-      { sprite: 'horse',   answer: 'le cheval',    options: ['le cheval', 'le poney', 'l\'âne', 'le mulet'] },
-      { sprite: 'crown',   answer: 'la couronne',  options: ['la couronne', 'le diadème', 'le casque', 'le chapeau'] },
-      { sprite: 'castle',  answer: 'le château',   options: ['le château', 'la tour', 'la forteresse', 'le manoir'] },
+      { sprite: 'warrior', answer: 'le guerrier', options: ['le guerrier', 'le chevalier', 'le soldat', 'le seigneur'],
+        wrongEmoji: '🚪',
+        wrongEnding: 'The warriors think you\'re a spy from the enemy castle! Off to the dungeon. Cold floors, no toys! The end!' },
+      { sprite: 'shield', answer: 'le bouclier', options: ['le bouclier', 'l\'armure', 'le casque', 'la cotte'],
+        wrongEmoji: '🏹',
+        wrongEnding: 'You hold up the wrong thing and the arrows whoosh right past! Time to run away really fast! The end!' },
+      { sprite: 'sword', answer: 'l\'épée', options: ['l\'épée', 'la lance', 'la hache', 'l\'arc'],
+        wrongEmoji: '🥄',
+        wrongEnding: 'You bring a soup spoon to the sword fight. The other warrior just laughs and laughs. Embarrassing! The end!' },
+      { sprite: 'horse', answer: 'le cheval', options: ['le cheval', 'le poney', 'l\'âne', 'le mulet'],
+        wrongEmoji: '🌅',
+        wrongEnding: 'You jump on the wrong animal and it gallops the WRONG way - all the way to a faraway kingdom! The end!' },
+      { sprite: 'crown', answer: 'la couronne', options: ['la couronne', 'le diadème', 'le casque', 'le chapeau'],
+        wrongEmoji: '👑',
+        wrongEnding: 'You don\'t recognize the king\'s crown? Banished from the kingdom! Pack a sandwich, you\'re walking far. The end!' },
+      { sprite: 'castle', answer: 'le château', options: ['le château', 'la tour', 'la forteresse', 'le manoir'],
+        wrongEmoji: '🚩',
+        wrongEnding: 'You walk into the WRONG castle - the enemy\'s! They greet you with chains and a "welcome to your new home." The end!' },
     ],
   },
 ];
@@ -84,8 +118,9 @@ document.addEventListener('click', (e) => {
   else if (action === 'to-gallery') startGallery();
   else if (action === 'to-fight')   startFight();
   else if (action === 'next-level') { STATE.levelIndex++; startLevel(); }
-  else if (action === 'restart')    { STATE.levelIndex = 0; STATE.totalScore = 0; showScreen('screen-title'); }
+  else if (action === 'restart')      { STATE.levelIndex = 0; STATE.totalScore = 0; showScreen('screen-title'); }
   else if (action === 'replay-fight') startFight();
+  else if (action === 'retry-stage')  startLevel();
 });
 
 // ---------------- Title -> Intro ----------------
@@ -124,16 +159,16 @@ function renderPuzzle() {
     const b = document.createElement('button');
     b.className = 'option-btn wide';
     b.textContent = opt;
-    b.addEventListener('click', () => onPuzzleAnswer(b, opt, p.answer));
+    b.addEventListener('click', () => onPuzzleAnswer(b, opt, p));
     opts.appendChild(b);
   });
 }
 
-function onPuzzleAnswer(btn, choice, correct) {
+function onPuzzleAnswer(btn, choice, puzzle) {
   const fb = document.getElementById('puzzle-feedback');
-  if (choice === correct) {
+  if (choice === puzzle.answer) {
     btn.classList.add('correct');
-    fb.textContent = '🎉 Bravo! ' + correct;
+    fb.textContent = '🎉 Bravo! ' + puzzle.answer;
     fb.style.color = '#06d6a0';
     document.querySelectorAll('#puzzle-options .option-btn').forEach((b) => (b.disabled = true));
     STATE.totalScore += 10;
@@ -144,12 +179,19 @@ function onPuzzleAnswer(btn, choice, correct) {
       setTimeout(renderPuzzle, 1100);
     }
   } else {
+    // CHOOSE-YOUR-OWN-ADVENTURE: wrong answer = unique bad ending = restart stage
     btn.classList.add('wrong');
-    btn.disabled = true;
-    fb.textContent = 'Non! Essaie encore.';
-    fb.style.color = '#ff6b6b';
-    setTimeout(() => btn.classList.remove('wrong'), 500);
+    document.querySelectorAll('#puzzle-options .option-btn').forEach((b) => (b.disabled = true));
+    setTimeout(() => showBadEnding(puzzle, choice), 600);
   }
+}
+
+function showBadEnding(puzzle, choice) {
+  document.getElementById('bad-emoji').textContent = puzzle.wrongEmoji || '💀';
+  document.getElementById('bad-ending-pick').textContent =
+    `You picked: "${choice}"  -  but it was "${puzzle.answer}"`;
+  document.getElementById('bad-ending-text').textContent = puzzle.wrongEnding;
+  showScreen('screen-bad-ending');
 }
 
 // ---------------- Gallery ----------------
